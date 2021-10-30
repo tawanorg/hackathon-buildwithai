@@ -52,7 +52,7 @@ const MOCK_ITEMS = [
     time: new Date(),
     isApproved: false,
   },{
-    id: 1,
+    id: 4,
     name: "Rice",
     photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
     from: "Tawan",
@@ -75,7 +75,7 @@ export default function Home() {
   }, [])
 
   const onSelect = (id) => {
-    const product = MOCK_ITEMS.find(x => x.id === id)
+    const product = data.find(x => x.id === id)
     setProduct(product)
     onOpen()
   }
@@ -106,6 +106,9 @@ export default function Home() {
       })
       setProductApprovalStatus(false)
       slowlyCloseModal()
+      setData((prev) => {
+        return prev.filter(x => x.id !== product.id)
+      })
     }, 500)
   }
   
@@ -133,7 +136,7 @@ export default function Home() {
   if (view === 'login') {
     return <LoginForm onSubmit={onSubmit} />
   }
- 
+  
   return (
     <>
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -191,7 +194,7 @@ export default function Home() {
         <Heading fontSize="2xl">Welcome, Demo</Heading>
         <Stack my="8">
           <HStack justifyContent={"space-between"} alignItems={"center"} mb="2">
-            <Heading fontSize="md"  >Available items ({MOCK_ITEMS.length})</Heading>
+            <Heading fontSize="md"  >Available items ({data.length})</Heading>
             <Stack spacing={3}>
               <Select placeholder="Sort by date" size="xs" />
             </Stack>
