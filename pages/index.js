@@ -1,5 +1,8 @@
+
+import Map from '../components/Map';
 import React, { useEffect } from 'react';
 import {
+  Alert,
   Divider,
   CloseButton,
   SimpleGrid,
@@ -27,7 +30,7 @@ import {
   Button, 
   Select
 } from '@chakra-ui/react'
- 
+
 import Loader from '../components/Loader';
 import LoginForm from '../components/LoginForm';
 
@@ -37,74 +40,90 @@ const MOCK_ITEMS = [
     name: "Snake Beans",
     photo: "https://i.ndtvimg.com/i/2014-11/snake-beans_625x300_71416569505.jpg",
     from: "Tew",
-    time: new Date(),
-    isApproved: false,
+    time: new Date()
   },
   {
     id: 2,
     name: "Bok Choy",
     photo: "https://i.ndtvimg.com/mt/cooks/2014-11/1382352986_bokchoy.jpg",
     from: "Ayz",
-    time: new Date(),
-    isApproved: false,
+    time: new Date()
   },
   {
     id: 3,
     name: "Sweet Potatoes",
     photo: "https://i.ndtvimg.com/mt/cooks/2014-11/sweet-potato-shakarkandi.jpg",
     from: "Jony",
-    time: new Date(),
-    isApproved: false,
+    time: new Date()
   },{
-    id: 1,
+    id: 4,
     name: "Rice",
     photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
     from: "Tawan",
     time: new Date(),
-    isApproved: false,
+    sponsored: 'Cole'
+  },
+  {
+    id: 5,
+    name: "Rice",
+    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
+    from: "Tawan",
+    time: new Date()
+  },
+  {
+    id: 6,
+    name: "Rice",
+    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
+    from: "Tawan",
+    time: new Date(),
+    sponsored: 'Woolworth'
   }
 ]
+
+const RECOMMENDATION_DATA = MOCK_ITEMS
   
 export default function Home() {
   const [view, setView] = React.useState('login');
-  const [data, setData] = React.useState(MOCK_ITEMS)
-  
-  const selectedProduct = null;
-
+  const [data, setData] = React.useState(RECOMMENDATION_DATA)
+  const [selectedProduct, setProduct] = React.useState(null);
   const { isOpen, onOpen, onClose: onCloseModal } = useDisclosure()
-
+ 
   const toast = useToast()
-
+  
   useEffect(() => {
     setView('login')
   }, [])
 
+  const onNotInterested = (id) => {
+    setData(data => data.filter(x => x.id !== id))
+  }
+
   const onSelect = (id) => {
-     
+    const product = MOCK_ITEMS.find(x => x.id === id)
+    setProduct(product)
+    onOpen()
   }
 
   const onClose = () => {
-     
+    setProduct(null)
+    onCloseModal()
   }
 
   const onSubmit = () => {
     setView('loading')
     setTimeout(() => {
-      setView('marketplace')
+      setView('admin')
     }, 500)
   }
 
-  const slowlyCloseModal = () => setTimeout(() => onClose(), 200)
-
-  
   if (view === 'loading') {
     return <Loader />
   }
 
-  // if (view === 'login') {
-  //   return <LoginForm title="Marketplace Login" onSubmit={onSubmit} />
-  // }
- 
+  if (view === 'login') {
+    return <LoginForm title="Marketplace Login" onSubmit={onSubmit} />
+  }
+
   return (
     <>
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -122,28 +141,13 @@ export default function Home() {
           <ModalBody>
             <Flex flexDir={"column"}>
               <Image boxSize="100%" maxH="300" src={selectedProduct.photo} alt="Photo" objectFit="contain" />
-      
-              <Box bg="gray.100" borderRadius={"lg"} p="8" mt="8">
-                
-                <Flex flexDir="column" alignItems={"center"} justifyContent={"center"}>
-                  <Avatar name={selectedProduct.from} />
-                  <Text fontSize="lg" fontWeight={"bold"}>{selectedProduct.from}</Text>
-                  <Text fontSize="xs">{selectedProduct.time.toUTCString()}</Text>
-                </Flex>
-                
+              <Box bg="gray.100" borderRadius={"lg"}>
+                <Map />
               </Box>
             </Flex>
           </ModalBody>
           <ModalFooter>
-            <Text fontWeight="bold" mr="2">
-              Token: 100
-            </Text>
-            <Button isLoading={productApprovalLoading} colorScheme="green" mr={3} onClick={() => onApprove(selectedProduct)}>
-              Approve
-            </Button>
-            <Button isLoading={productRejectLoading} colorScheme="orange"  onClick={() => onReject(selectedProduct)}>
-              Reject
-            </Button> 
+            <Button variant="solid" colorScheme="green">Get Direction</Button>
           </ModalFooter>
           </>
         )}
@@ -153,7 +157,10 @@ export default function Home() {
       <Flex bg="white" borderBottom={1} boxShadow={"md"} p="4">
         <Container>
           <Flex justifyContent={"space-between"} alignItems={"center"}>
-          <Heading fontSize={"3xl"}>Menu</Heading>
+          <Flex flexDir="column">
+            <Heading fontSize={"3xl"}>ZEROO</Heading>
+            <Text fontSize="sm" display={['none', 'none', 'inline-block']}><i>We're the best zero waste community</i></Text>
+          </Flex>
           <Flex>
             <Flex
             flexDir="column"
@@ -179,7 +186,7 @@ export default function Home() {
             <Text fontSize="sm" opacity={0.6}>Items based on your' buying behavior</Text>
           </Flex>
           <Divider />
-          <Box my="20" />
+          <Box my="20" /> 
           <SimpleGrid columns={2} spacing={4}>
             {
               data.map((item => (
@@ -195,9 +202,16 @@ export default function Home() {
                     />
                     <Box pos="absolute" top={1} right={1}>
                       <Tooltip label="I'm not interested">
-                        <CloseButton size="sm" bg="gray.100"  _hover={{ bg: "gray.400"}} borderRadius="full" />
+                        <CloseButton onClick={() => onNotInterested(item.id)} size="sm" bg="gray.100"  _hover={{ bg: "gray.400"}} borderRadius="full" />
                       </Tooltip>
                     </Box>
+                    {!!item?.sponsored && (
+                      <Box pos="absolute" bottom={1} right={1}>
+                        <Badge variant="solid" colorScheme="green">
+                          <Text fontSize="xs">{item.sponsored}</Text>
+                        </Badge>
+                      </Box>
+                    )}
                   </Box>
                   <Flex flexDir="column" mt="2">
                     <Heading fontSize="lg">
@@ -219,7 +233,7 @@ export default function Home() {
           <Divider />
           <Stack>
           {
-            data.map((item) => (
+            MOCK_ITEMS.map((item) => (
               <ScaleFade initialScale={0.9} in>
                 <Flex 
                   alignItems={"center"} 
@@ -261,3 +275,4 @@ export default function Home() {
     </>
   )
 }
+ 

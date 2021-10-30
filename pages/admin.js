@@ -178,7 +178,7 @@ export default function Home() {
         )}
       </ModalContent>
     </Modal>
-    <Flex flexDir="column" width="full">
+    <Flex flexDir="column" width="full" h="1000px">
       <Flex bg="white" borderBottom={1} boxShadow={"md"} p="4">
         <Container>
           <Flex justifyContent={"space-between"} alignItems={"center"}>
