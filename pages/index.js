@@ -61,7 +61,7 @@ const MOCK_ITEMS = [
     photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
     from: "Tawan",
     time: new Date(),
-    sponsored: 'Cole'
+    sponsored: 'Coles'
   },
   {
     id: 5,
