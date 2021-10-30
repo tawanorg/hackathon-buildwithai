@@ -121,7 +121,7 @@ export default function Home() {
   }
 
   if (view === 'login') {
-    return <LoginForm title="Marketplace Login" onSubmit={onSubmit} />
+    return <LoginForm title="ZEROO Login" onSubmit={onSubmit} />
   }
 
   return (
