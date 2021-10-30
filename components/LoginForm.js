@@ -1,10 +1,10 @@
 import { Button, FormControl, FormLabel, Input, Stack, Heading, Box, Container } from "@chakra-ui/react";
 
-export default function LoginForm({ onSubmit }) {
+export default function LoginForm({ title = 'NGO Login', onSubmit }) {
   return (
     <Box bg="gray.100" h="100vh" w="100vw" pt="4">
       <Container mt="20">
-        <Heading my="4">NGO Log In</Heading>
+        <Heading my="4">{title}</Heading>
         <Stack>
           <FormControl id="username" isRequired>
             <FormLabel>First name</FormLabel>

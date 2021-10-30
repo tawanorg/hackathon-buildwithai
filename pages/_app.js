@@ -12,7 +12,7 @@ const theme = extendTheme({ colors })
 function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider theme={theme}>
-      <Box bg="gray.100" h="100vh" w="100vw">
+      <Box bg="gray.100" >
         <Component {...pageProps} />
       </Box>
     </ChakraProvider>
