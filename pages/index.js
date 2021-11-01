@@ -63,7 +63,7 @@ export default function Home() {
   }, [])
 
   const onNotInterested = (id) => {
-    setData(data => data.filter(x => x.id !== id))
+    setRecData(data => data.filter(x => x.id !== id))
   }
 
   const onSelect = (id) => {
