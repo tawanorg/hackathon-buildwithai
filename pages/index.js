@@ -28,70 +28,38 @@ import {
   Stack, 
   HStack, 
   Button, 
-  Select
+  Select,
+  Spinner
 } from '@chakra-ui/react'
 
 import Loader from '../components/Loader';
 import LoginForm from '../components/LoginForm';
-
-const MOCK_ITEMS = [
-  {
-    id: 1,
-    name: "Snake Beans",
-    photo: "https://i.ndtvimg.com/i/2014-11/snake-beans_625x300_71416569505.jpg",
-    from: "Tew",
-    time: new Date()
-  },
-  {
-    id: 2,
-    name: "Bok Choy",
-    photo: "https://i.ndtvimg.com/mt/cooks/2014-11/1382352986_bokchoy.jpg",
-    from: "Ayz",
-    time: new Date()
-  },
-  {
-    id: 3,
-    name: "Sweet Potatoes",
-    photo: "https://i.ndtvimg.com/mt/cooks/2014-11/sweet-potato-shakarkandi.jpg",
-    from: "Jony",
-    time: new Date()
-  },{
-    id: 4,
-    name: "Rice",
-    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
-    from: "Tawan",
-    time: new Date(),
-    sponsored: 'Coles'
-  },
-  {
-    id: 5,
-    name: "Rice",
-    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
-    from: "Tawan",
-    time: new Date()
-  },
-  {
-    id: 6,
-    name: "Rice",
-    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
-    from: "Tawan",
-    time: new Date(),
-    sponsored: 'Woolworth'
-  }
-]
-
-const RECOMMENDATION_DATA = MOCK_ITEMS
-  
+ 
 export default function Home() {
   const [view, setView] = React.useState('login');
-  const [data, setData] = React.useState(RECOMMENDATION_DATA)
+  
+  const [EXPIRING_DATA, setExpiredData] = React.useState([])
+  const [RECOMMENDATION_DATA, setRecData] = React.useState([])
+ 
   const [selectedProduct, setProduct] = React.useState(null);
   const { isOpen, onOpen, onClose: onCloseModal } = useDisclosure()
- 
-  const toast = useToast()
+
+  const getExpiredData = async () => {
+    const response = await fetch('/api/expired')
+    const result = await response.json()
+    setExpiredData(result)
+  }
+
+  const getRecData = async () => {
+    const response = await fetch('/api/recommend')
+    const result = await response.json()
+    setRecData(result)
+  }
   
   useEffect(() => {
     setView('login')
+    getExpiredData()
+    getRecData()
   }, [])
 
   const onNotInterested = (id) => {
@@ -99,7 +67,7 @@ export default function Home() {
   }
 
   const onSelect = (id) => {
-    const product = MOCK_ITEMS.find(x => x.id === id)
+    const product = EXPIRING_DATA.find(x => x.id === id)
     setProduct(product)
     onOpen()
   }
@@ -123,7 +91,7 @@ export default function Home() {
   if (view === 'login') {
     return <LoginForm title="ZEROO Login" onSubmit={onSubmit} />
   }
-
+ 
   return (
     <>
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -147,7 +115,17 @@ export default function Home() {
             </Flex>
           </ModalBody>
           <ModalFooter>
-            <Button variant="solid" colorScheme="green">Get Direction</Button>
+            <Button 
+              variant="solid" colorScheme="green" 
+              onClick={() => {
+                var anchor = document.createElement('a');
+                anchor.href = 'https://www.google.com/maps/search/?api=1&query=-37.808163434%2C144.957829502'
+                anchor.target="_blank";
+                anchor.click();
+              }}
+            >
+              Get Direction
+            </Button>
           </ModalFooter>
           </>
         )}
@@ -182,14 +160,19 @@ export default function Home() {
         <Heading fontSize="2xl">👋 Welcome, Demo</Heading>
         <Stack my="4">
           <Flex flexDir="column">
-            <Heading fontSize="md">Products Recommendation ({MOCK_ITEMS.length})</Heading>
+            <Heading fontSize="md">Recommendation ({RECOMMENDATION_DATA.length})</Heading>
             <Text fontSize="sm" opacity={0.6}>Items based on your' buying behavior</Text>
           </Flex>
           <Divider />
           <Box my="20" /> 
+          {RECOMMENDATION_DATA.length === 0 && (
+            <Flex width="full" height="full" p="20" justifyContent="center" alignItems="center">
+              <Spinner size="lg" />
+            </Flex>
+          )}
           <SimpleGrid columns={2} spacing={4}>
             {
-              data.map((item => (
+              RECOMMENDATION_DATA.map((item => (
                 <Flex flexDir="column">
                   <Box pos="relative">
                     <Image
@@ -225,15 +208,20 @@ export default function Home() {
           </SimpleGrid>
           <Box my="20" />
           <HStack justifyContent={"space-between"} alignItems={"center"} mb="4">
-            <Heading fontSize="md">Expiring products ({MOCK_ITEMS.length})</Heading>
+            <Heading fontSize="md">Expiring products ({EXPIRING_DATA.length})</Heading>
             <Stack spacing={3}>
               <Select placeholder="Sort by date" size="xs" />
             </Stack>
           </HStack>
           <Divider />
           <Stack>
+          {EXPIRING_DATA.length === 0 && (
+            <Flex width="full" height="full" p="20" justifyContent="center" alignItems="center">
+              <Spinner size="lg" />
+            </Flex>
+          )}
           {
-            MOCK_ITEMS.map((item) => (
+            EXPIRING_DATA.map((item) => (
               <ScaleFade initialScale={0.9} in>
                 <Flex 
                   alignItems={"center"} 
@@ -260,7 +248,7 @@ export default function Home() {
                           <Text fontSize="xs">Expired in 2 days</Text>
                         </Badge>
                       </Heading>
-                      <Text fontSize="sm" opacity={"0.7"}>From <b>{item.from}</b> on {item.time.toUTCString()}</Text>
+                      <Text fontSize="sm" opacity={"0.7"}>From <b>{item.from}</b> on {item.time}</Text>
                     </Flex>
                     </Flex>
                   <Button   onClick={() => onSelect(item.id)}>👉</Button>

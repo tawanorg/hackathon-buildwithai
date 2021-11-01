@@ -1,3 +1,4 @@
+import '../styles/global.css';
 import { Box, extendTheme, ChakraProvider } from "@chakra-ui/react"
 
 const colors = {

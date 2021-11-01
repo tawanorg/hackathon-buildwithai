@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  Spinner,
   useToast,
   Badge,
   useDisclosure, 
@@ -24,54 +25,28 @@ import {
   Select
 } from '@chakra-ui/react'
  
+import AdminMap from '../components/AdminMap';
 import Loader from '../components/Loader';
 import LoginForm from '../components/LoginForm';
-
-const MOCK_ITEMS = [
-  {
-    id: 1,
-    name: "Snake Beans",
-    photo: "https://i.ndtvimg.com/i/2014-11/snake-beans_625x300_71416569505.jpg",
-    from: "Tew",
-    time: new Date(),
-    isApproved: false,
-  },
-  {
-    id: 2,
-    name: "Bok Choy",
-    photo: "https://i.ndtvimg.com/mt/cooks/2014-11/1382352986_bokchoy.jpg",
-    from: "Ayz",
-    time: new Date(),
-    isApproved: false,
-  },
-  {
-    id: 3,
-    name: "Sweet Potatoes",
-    photo: "https://i.ndtvimg.com/mt/cooks/2014-11/sweet-potato-shakarkandi.jpg",
-    from: "Jony",
-    time: new Date(),
-    isApproved: false,
-  },{
-    id: 4,
-    name: "Rice",
-    photo: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F43%2F2015%2F02%2FCooked-Rice.jpg&q=85",
-    from: "Tawan",
-    time: new Date(),
-    isApproved: false,
-  }
-]
-  
+ 
 export default function Home() {
   const [view, setView] = React.useState('login');
-  const [data, setData] = React.useState(MOCK_ITEMS)
+  const [data, setData] = React.useState([])
   const [productApprovalLoading, setProductApprovalStatus] = React.useState(false)
   const [productRejectLoading, setProductRejectStatus] = React.useState(false)
   const [selectedProduct, setProduct] = React.useState(null);
   const { isOpen, onOpen, onClose: onCloseModal } = useDisclosure()
   const toast = useToast()
 
+  const getData = async () => {
+    const response = await fetch('/api/expired')
+    const result = await response.json()
+    setData(result)
+  }
+
   useEffect(() => {
     setView('login')
+    getData()
   }, [])
 
   const onSelect = (id) => {
@@ -128,17 +103,26 @@ export default function Home() {
     }, 500)
   }
  
+  const [mapView, setIsMapView] = React.useState(false)
 
-  if (view === 'loading') {
-    return <Loader />
-  }
+  // if (view === 'loading') {
+  //   return <Loader />
+  // }
 
-  if (view === 'login') {
-    return <LoginForm onSubmit={onSubmit} />
-  }
-  
+  // if (view === 'login') {
+  //   return <LoginForm onSubmit={onSubmit} />
+  // }
+ 
   return (
     <>
+    {/* <Box 
+      pos="fixed" bottom={5} left={0} right={0} width="full"
+      display="flex"
+      justifyContent="center"
+      zIndex="99999999"
+    >
+      <Button variant="solid" size="lg" colorScheme="green" onClick={() => setIsMapView(!mapView)}>{mapView ? 'List view' : 'Map view'}</Button>
+    </Box> */}
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
@@ -160,7 +144,7 @@ export default function Home() {
                 <Flex flexDir="column" alignItems={"center"} justifyContent={"center"}>
                   <Avatar name={selectedProduct.from} />
                   <Text fontSize="lg" fontWeight={"bold"}>{selectedProduct.from}</Text>
-                  <Text fontSize="xs">{selectedProduct.time.toUTCString()}</Text>
+                  <Text fontSize="xs">{selectedProduct.time}</Text>
                 </Flex>
                 
               </Box>
@@ -192,13 +176,19 @@ export default function Home() {
       </Flex>
       <Container py="8">
         <Heading fontSize="2xl">Welcome, Demo</Heading>
-        <Stack my="8">
+        {!mapView && (
+          <Stack my="8">
           <HStack justifyContent={"space-between"} alignItems={"center"} mb="2">
-            <Heading fontSize="md"  >Available items ({data.length})</Heading>
+            <Heading fontSize="md">Available items ({data.length})</Heading>
             <Stack spacing={3}>
               <Select placeholder="Sort by date" size="xs" />
             </Stack>
           </HStack>
+          {data.length === 0 && (
+            <Flex width="full" height="full" p="20" justifyContent="center" alignItems="center">
+              <Spinner size="lg" />
+            </Flex>
+          )}
           {
             data.map((item) => (
               <ScaleFade initialScale={0.9} in>
@@ -227,7 +217,7 @@ export default function Home() {
                           <Text fontSize="xs">Expired in 2 days</Text>
                         </Badge>
                       </Heading>
-                      <Text fontSize="sm" opacity={"0.7"}>From <b>{item.from}</b> on {item.time.toUTCString()}</Text>
+                      <Text fontSize="sm" opacity={"0.7"}>From <b>{item.from}</b> on {item.time}</Text>
                     </Flex>
                     </Flex>
                   <Button colorScheme={"green"} onClick={() => onSelect(item.id)}>See detail</Button>
@@ -236,6 +226,8 @@ export default function Home() {
             ))
           }
         </Stack>
+        )}
+        {/* {mapView && <AdminMap />} */}
       </Container>
     </Flex>
     </>

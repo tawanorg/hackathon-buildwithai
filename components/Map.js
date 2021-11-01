@@ -22,8 +22,8 @@ const AnyReactComponent = ({ text }) => (
 class SimpleMap extends Component {
   static defaultProps = {
     center: {
-      lat: 59.95,
-      lng: 30.33
+      lat: -37.808163434,
+      lng: 144.957829502
     },
     zoom: 11
   };
@@ -31,19 +31,20 @@ class SimpleMap extends Component {
   render() {
     return (
       <Box>
-          <Flex justifyContent={"center"} p={4}>
-            <Text>Nearest location is in 15 Southbank, VIC</Text>
+          <Flex flexDir="column" alignItems={"center"} justifyContent={"center"} p={4}>
+            <Text>Nearest location</Text>
+            <Text>301-311 Flinders Ln, Melbourne VIC 3000, Australia</Text>
           </Flex>
           <Box style={{ height: '200px', width: '100%' }}>
             <GoogleMapReact
-                bootstrapURLKeys={{ key: 'AIzaSyD33pssunz_P8z-LOTHeiYw1fPMuXXnszo' }}
-                defaultCenter={this.props.center}
-                defaultZoom={this.props.zoom}
+              bootstrapURLKeys={{ key: 'AIzaSyD33pssunz_P8z-LOTHeiYw1fPMuXXnszo' }}
+              defaultCenter={this.props.center}
+              defaultZoom={this.props.zoom}
             >
             <AnyReactComponent
-                lat={59.955413}
-                lng={30.337844}
-                text="15 Southbank, VIC"
+              lat={this.props.center.lat}
+              lng={this.props.center.lng}
+              text="15 Southbank, VIC"
             />
             </GoogleMapReact>
         </Box>
