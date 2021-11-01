@@ -28,6 +28,7 @@ import {
 import AdminMap from '../components/AdminMap';
 import Loader from '../components/Loader';
 import LoginForm from '../components/LoginForm';
+import PieChart from '../components/PieChart';
  
 export default function Home() {
   const [view, setView] = React.useState('login');
@@ -176,8 +177,13 @@ export default function Home() {
       </Flex>
       <Container py="8">
         <Heading fontSize="2xl">Welcome, Demo</Heading>
+        <Stack my="8">
+          {/* <HStack justifyContent={"space-between"} alignItems={"center"} mb="2">
+            <Heading fontSize="md">Demanded items</Heading>
+          </HStack>
+          <PieChart /> */}
         {!mapView && (
-          <Stack my="8">
+         <>
           <HStack justifyContent={"space-between"} alignItems={"center"} mb="2">
             <Heading fontSize="md">Available items ({data.length})</Heading>
             <Stack spacing={3}>
@@ -225,8 +231,9 @@ export default function Home() {
             </ScaleFade>
             ))
           }
-        </Stack>
+          </>
         )}
+        </Stack>
         {/* {mapView && <AdminMap />} */}
       </Container>
     </Flex>
